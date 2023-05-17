@@ -152,22 +152,19 @@ void applyLowPassFilter_OpenMP(int* input, int width, int height, int kernelSize
 }
 
 // Function to apply a low pass filter with a variable kernel size using MPI
-void applyLowPassFilter_MPI(int* imageData, int width, int height, int kernelSize, int size, int rank, int threads)
+void applyLowPassFilter_MPI(int* imageData, int width, int height, int kernelSize, int size, int rank)
 {
-    // Determine the size of the local chunk of image data to be processed by each process
-    int chunkSize = width * height / threads;
-
     // Allocate memory for local chunk of image data to be processed by each process
-    int* localData = new int[chunkSize];
+    int* localData = new int[width * height / size];
 
     // Calculate kernel radius to be used for filtering
     int kernelRadius = kernelSize / 2;
 
     // Scatter input image data from root process to all processes
-    MPI_Scatter(imageData, chunkSize, MPI_INT, localData, chunkSize, MPI_INT, 0, MPI_COMM_WORLD);
+    MPI_Scatter(imageData, width * height / size, MPI_INT, localData, width * height / size, MPI_INT, 0, MPI_COMM_WORLD);
 
     // Allocate memory for filtered image data
-    int* filteredData = new int[chunkSize];
+    int* filteredData = new int[width * height / size];
 
     // Allocate memory for kernel and initialize with ones
     int* kernel = new int[kernelSize * kernelSize];
@@ -177,7 +174,7 @@ void applyLowPassFilter_MPI(int* imageData, int width, int height, int kernelSiz
     }
 
     // Apply low pass filter to local chunk of image data
-    for (int i = kernelRadius; i < height / threads - kernelRadius; i++)
+    for (int i = kernelRadius; i < height / size - kernelRadius; i++)
     {
         for (int j = kernelRadius; j < width - kernelRadius; j++)
         {
@@ -194,7 +191,7 @@ void applyLowPassFilter_MPI(int* imageData, int width, int height, int kernelSiz
     }
 
     // Gather filtered image data from all processes to root process
-    MPI_Gather(filteredData, chunkSize, MPI_INT, imageData, chunkSize, MPI_INT, 0, MPI_COMM_WORLD);
+    MPI_Gather(filteredData, width * height / size, MPI_INT, imageData, width * height / size, MPI_INT, 0, MPI_COMM_WORLD);
 
     // Free memory for local data, filtered data, and kernel
     delete[] localData;
