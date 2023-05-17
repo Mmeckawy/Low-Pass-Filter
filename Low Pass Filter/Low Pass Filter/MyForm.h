@@ -219,7 +219,6 @@ private: System::Void button2_Click(System::Object^ sender, System::EventArgs^ e
 	String^ size = textBox1->Text;
 	// Convert the selected item to an integer
 	int kernelSize = System::Convert::ToInt32(size);
-	MPI_Init(NULL, NULL); // Initialize MPI
 	int world_size;
 	MPI_Comm_size(MPI_COMM_WORLD, &world_size); // Get the number of processes
 	int rank;
@@ -231,7 +230,6 @@ private: System::Void button2_Click(System::Object^ sender, System::EventArgs^ e
 	{
 		createImage(imageData, ImageWidth, ImageHeight, kernelSize, 1);
 	}
-	MPI_Finalize(); // Finalize MPI
 	System::String^ imagePath;
 	std::string imgPath;
 	imgPath = "..//Data//Output//mpi" + std::to_string(kernelSize) + ".png";
