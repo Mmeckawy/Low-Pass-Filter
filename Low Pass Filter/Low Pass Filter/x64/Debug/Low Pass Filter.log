@@ -1,8 +1,6 @@
 ﻿  MyForm.cpp
-D:\Engineering Senior\Semester 10\HPC\P2\Low-Pass-Filter\Low Pass Filter\Low Pass Filter\MyForm.h(203,58): warning C4244: '=': conversion from 'double' to 'int', possible loss of data
-D:\Engineering Senior\Semester 10\HPC\P2\Low-Pass-Filter\Low Pass Filter\Low Pass Filter\MyForm.h(241,60): warning C4244: '+=': conversion from 'double' to 'int', possible loss of data
-  edits.cpp
-D:\Engineering Senior\Semester 10\HPC\P2\Low-Pass-Filter\Low Pass Filter\Low Pass Filter\edits.cpp(110,13): warning C4849: OpenMP 'collapse' clause ignored in 'parallel for' directive
-  Generating Code...
+D:\Engineering Senior\Semester 10\HPC\P2\Low-Pass-Filter\Low Pass Filter\Low Pass Filter\MyForm.h(216,58): warning C4244: '=': conversion from 'double' to 'int', possible loss of data
+D:\Engineering Senior\Semester 10\HPC\P2\Low-Pass-Filter\Low Pass Filter\Low Pass Filter\MyForm.h(254,60): warning C4244: '+=': conversion from 'double' to 'int', possible loss of data
+D:\Engineering Senior\Semester 10\HPC\P2\Low-Pass-Filter\Low Pass Filter\Low Pass Filter\MyForm.h(286,58): warning C4244: '=': conversion from 'double' to 'int', possible loss of data
   edits.obj : MSIL module encountered; incremental linking is disabled for MSIL; performing full link
   Low Pass Filter.vcxproj -> D:\Engineering Senior\Semester 10\HPC\P2\Low-Pass-Filter\Low Pass Filter\x64\Debug\Low Pass Filter.exe
