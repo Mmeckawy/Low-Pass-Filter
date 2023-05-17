@@ -80,11 +80,72 @@ void createImage(int* image, int width, int height, int index, int mode)
     if (mode == 0) {
         MyNewImage.Save("..//Data//Output//openmp" + index + ".png");
     }
-    else {
+    else if(mode == 1) {
         MyNewImage.Save("..//Data//Output//mpi" + index + ".png");
 
     }
+    else {
+        MyNewImage.Save("..//Data//Output//seq" + index + ".png");
+
+    }
     cout << "result Image Saved " << index << endl;
+}
+
+// Function to apply a low pass filter with a variable kernel size sequentially
+void applyLowPassFilter_Sequential(int* input, int width, int height, int kernelSize)
+{
+    // Calculate kernel dimensions
+    int kernelRadius = kernelSize / 2;
+
+    // Allocate memory for kernel
+    int* kernel = new int[kernelSize * kernelSize];
+
+    // Initialize kernel with ones
+    for (int i = 0; i < kernelSize * kernelSize; i++)
+    {
+        kernel[i] = 1;
+    }
+
+    // Loop through image pixels and apply filter
+    for (int i = kernelRadius; i < height - kernelRadius; i++)
+    {
+        for (int j = kernelRadius; j < width - kernelRadius; j++)
+        {
+            int sum = 0;
+            for (int k1 = -kernelRadius; k1 <= kernelRadius; k1++)
+            {
+                for (int k2 = -kernelRadius; k2 <= kernelRadius; k2++)
+                {
+                    sum += input[(i + k1) * width + (j + k2)] * kernel[(k1 + kernelRadius) * kernelSize + (k2 + kernelRadius)];
+                }
+            }
+            input[i * width + j] = sum / (kernelSize * kernelSize); // Divide by total kernel weight to get average
+        }
+    }
+
+    // Set border pixels to black
+    for (int i = 0; i < height; i++)
+    {
+        for (int j = 0; j < kernelRadius; j++)
+        {
+            // Set left and right border pixels to black
+            input[i * width + j] = 0;
+            input[i * width + (width - 1 - j)] = 0;
+        }
+    }
+
+    for (int j = kernelRadius; j < width - kernelRadius; j++)
+    {
+        for (int i = 0; i < kernelRadius; i++)
+        {
+            // Set top and bottom border pixels to black
+            input[i * width + j] = 0;
+            input[(height - 1 - i) * width + j] = 0;
+        }
+    }
+
+    // Free memory for kernel
+    delete[] kernel;
 }
 
 // Function to apply a low pass filter with a variable kernel size using OpenMP
