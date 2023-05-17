@@ -90,16 +90,13 @@ void createImage(int* image, int width, int height, int index, int mode)
 // Function to apply a low pass filter with a variable kernel size using OpenMP
 void applyLowPassFilter_OpenMP(int* input, int width, int height, int kernelSize)
 {
-    // Calculate kernel dimensions
     int kernelRadius = kernelSize / 2;
-    int kernelWidth = kernelSize;
-    int kernelHeight = kernelSize;
 
     // Allocate memory for kernel
-    int* kernel = new int[kernelWidth * kernelHeight];
+    int* kernel = new int[kernelSize * kernelSize];
 
     // Initialize kernel with ones
-    for (int i = 0; i < kernelWidth * kernelHeight; i++)
+    for (int i = 0; i < kernelSize * kernelSize; i++)
     {
         kernel[i] = 1;
     }
@@ -115,7 +112,7 @@ void applyLowPassFilter_OpenMP(int* input, int width, int height, int kernelSize
             {
                 for (int k2 = -kernelRadius; k2 <= kernelRadius; k2++)
                 {
-                    sum += input[(i + k1) * width + (j + k2)] * kernel[(k1 + kernelRadius) * kernelWidth + (k2 + kernelRadius)];
+                    sum += input[(i + k1) * width + (j + k2)] * kernel[(k1 + kernelRadius) * kernelSize + (k2 + kernelRadius)];
                 }
             }
             input[i * width + j] = sum / (kernelSize * kernelSize); // Divide by total kernel weight to get average
@@ -128,6 +125,7 @@ void applyLowPassFilter_OpenMP(int* input, int width, int height, int kernelSize
     {
         for (int j = 0; j < kernelRadius; j++)
         {
+            // Set left and right border pixels to black
             input[i * width + j] = 0;
             input[i * width + (width - 1 - j)] = 0;
         }
@@ -138,6 +136,7 @@ void applyLowPassFilter_OpenMP(int* input, int width, int height, int kernelSize
     {
         for (int i = 0; i < kernelRadius; i++)
         {
+            // Set top and bottom border pixels to black
             input[i * width + j] = 0;
             input[(height - 1 - i) * width + j] = 0;
         }
@@ -148,12 +147,13 @@ void applyLowPassFilter_OpenMP(int* input, int width, int height, int kernelSize
 }
 
 // Function to apply a low pass filter with a variable kernel size using MPI
-void applyLowPassFilter_MPI(int* imageData, int ImageWidth, int ImageHeight, int kernelSize, int world_size, int rank)
-{ 
-    int* localData = new int[ImageWidth * ImageHeight / world_size];
-    MPI_Scatter(imageData, ImageWidth * ImageHeight / world_size, MPI_INT, localData, ImageWidth * ImageHeight / world_size, MPI_INT, 0, MPI_COMM_WORLD);
+void applyLowPassFilter_MPI(int* imageData, int width, int height, int kernelSize, int size, int rank)
+{
+    int* localData = new int[width * height / size];
+    int kernelRadius = kernelSize / 2;
+    MPI_Scatter(imageData, width * height / size, MPI_INT, localData, width * height / size, MPI_INT, 0, MPI_COMM_WORLD);
 
-    int* filteredData = new int[ImageWidth * ImageHeight / world_size];
+    int* filteredData = new int[width * height / size];
     int* kernel = new int[kernelSize * kernelSize];
 
     for (int i = 0; i < kernelSize * kernelSize; i++)
@@ -161,23 +161,23 @@ void applyLowPassFilter_MPI(int* imageData, int ImageWidth, int ImageHeight, int
         kernel[i] = 1;
     }
 
-    for (int i = kernelSize / 2; i < ImageHeight / world_size - kernelSize / 2; i++)
+    for (int i = kernelRadius; i < height / size - kernelRadius; i++)
     {
-        for (int j = kernelSize / 2; j < ImageWidth - kernelSize / 2; j++)
+        for (int j = kernelRadius; j < width - kernelRadius; j++)
         {
             int sum = 0;
-            for (int k = -kernelSize / 2; k <= kernelSize / 2; k++)
+            for (int k = -kernelRadius; k <= kernelRadius; k++)
             {
-                for (int l = -kernelSize / 2; l <= kernelSize / 2; l++)
+                for (int l = -kernelRadius; l <= kernelRadius; l++)
                 {
-                    sum += localData[(i + k) * ImageWidth + (j + l)] * kernel[(k + kernelSize / 2) * kernelSize + (l + kernelSize / 2)];
+                    sum += localData[(i + k) * width + (j + l)] * kernel[(k + kernelRadius) * kernelSize + (l + kernelRadius)];
                 }
             }
-            filteredData[i * ImageWidth + j] = sum / (kernelSize * kernelSize);
+            filteredData[i * width + j] = sum / (kernelSize * kernelSize);
         }
     }
 
-    MPI_Gather(filteredData, ImageWidth * ImageHeight / world_size, MPI_INT, imageData, ImageWidth * ImageHeight / world_size, MPI_INT, 0, MPI_COMM_WORLD);
+    MPI_Gather(filteredData, width * height / size, MPI_INT, imageData, width * height / size, MPI_INT, 0, MPI_COMM_WORLD);
 
     delete[] localData;
     delete[] filteredData;
