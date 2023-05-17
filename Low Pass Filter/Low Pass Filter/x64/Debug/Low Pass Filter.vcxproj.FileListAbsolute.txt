@@ -2,3 +2,7 @@ D:\Engineering Senior\Semester 10\HPC\Project\Low Pass Filter\Low Pass Filter\x6
 D:\Engineering Senior\Semester 10\HPC\Project\Low Pass Filter\Low Pass Filter\x64\Debug\Low Pass Filter.vcxproj.SuggestedBindingRedirects.cache
 D:\Engineering Senior\Semester 10\HPC\Project\Low Pass Filter\Low Pass Filter\x64\Debug\LowPassFilter.MyForm.resources
 D:\Engineering Senior\Semester 10\HPC\Project\Low Pass Filter\Low Pass Filter\x64\Debug\Low Pass Filter.vcxproj.GenerateResource.cache
+D:\Engineering Senior\Semester 10\HPC\P2\Low-Pass-Filter\Low Pass Filter\Low Pass Filter\x64\Debug\Low Pass Filter.vcxproj.AssemblyReference.cache
+D:\Engineering Senior\Semester 10\HPC\P2\Low-Pass-Filter\Low Pass Filter\Low Pass Filter\x64\Debug\Low Pass Filter.vcxproj.SuggestedBindingRedirects.cache
+D:\Engineering Senior\Semester 10\HPC\P2\Low-Pass-Filter\Low Pass Filter\Low Pass Filter\x64\Debug\LowPassFilter.MyForm.resources
+D:\Engineering Senior\Semester 10\HPC\P2\Low-Pass-Filter\Low Pass Filter\Low Pass Filter\x64\Debug\Low Pass Filter.vcxproj.GenerateResource.cache

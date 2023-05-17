@@ -46,6 +46,7 @@ namespace LowPassFilter {
 
 	private: System::Windows::Forms::TextBox^ textBox1;
 	private: System::Windows::Forms::Label^ label1;
+	private: System::Windows::Forms::ComboBox^ comboBox1;
 
 	private:
 		/// <summary>
@@ -66,12 +67,13 @@ namespace LowPassFilter {
 			this->button3 = (gcnew System::Windows::Forms::Button());
 			this->textBox1 = (gcnew System::Windows::Forms::TextBox());
 			this->label1 = (gcnew System::Windows::Forms::Label());
+			this->comboBox1 = (gcnew System::Windows::Forms::ComboBox());
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->pictureBox1))->BeginInit();
 			this->SuspendLayout();
 			// 
 			// button1
 			// 
-			this->button1->Location = System::Drawing::Point(164, 26);
+			this->button1->Location = System::Drawing::Point(135, 24);
 			this->button1->Name = L"button1";
 			this->button1->Size = System::Drawing::Size(85, 30);
 			this->button1->TabIndex = 0;
@@ -81,7 +83,7 @@ namespace LowPassFilter {
 			// 
 			// button2
 			// 
-			this->button2->Location = System::Drawing::Point(287, 26);
+			this->button2->Location = System::Drawing::Point(237, 24);
 			this->button2->Name = L"button2";
 			this->button2->Size = System::Drawing::Size(75, 30);
 			this->button2->TabIndex = 1;
@@ -100,7 +102,7 @@ namespace LowPassFilter {
 			// 
 			// button3
 			// 
-			this->button3->Location = System::Drawing::Point(553, 28);
+			this->button3->Location = System::Drawing::Point(489, 24);
 			this->button3->Name = L"button3";
 			this->button3->Size = System::Drawing::Size(117, 30);
 			this->button3->TabIndex = 4;
@@ -110,7 +112,7 @@ namespace LowPassFilter {
 			// 
 			// textBox1
 			// 
-			this->textBox1->Location = System::Drawing::Point(393, 30);
+			this->textBox1->Location = System::Drawing::Point(331, 30);
 			this->textBox1->Name = L"textBox1";
 			this->textBox1->Size = System::Drawing::Size(133, 22);
 			this->textBox1->TabIndex = 5;
@@ -120,12 +122,22 @@ namespace LowPassFilter {
 			// label1
 			// 
 			this->label1->AutoSize = true;
-			this->label1->Location = System::Drawing::Point(728, 33);
+			this->label1->Location = System::Drawing::Point(778, 38);
 			this->label1->Name = L"label1";
 			this->label1->Size = System::Drawing::Size(69, 16);
 			this->label1->TabIndex = 6;
 			this->label1->Text = L"Runtime = ";
 			this->label1->Click += gcnew System::EventHandler(this, &MyForm::label1_Click);
+			// 
+			// comboBox1
+			// 
+			this->comboBox1->FormattingEnabled = true;
+			this->comboBox1->Location = System::Drawing::Point(628, 30);
+			this->comboBox1->Name = L"comboBox1";
+			this->comboBox1->Size = System::Drawing::Size(121, 24);
+			this->comboBox1->TabIndex = 7;
+			this->comboBox1->Text = L"processors";
+			this->comboBox1->SelectedIndexChanged += gcnew System::EventHandler(this, &MyForm::comboBox1_SelectedIndexChanged);
 			// 
 			// MyForm
 			// 
@@ -133,6 +145,7 @@ namespace LowPassFilter {
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
 			this->BackColor = System::Drawing::SystemColors::ControlLight;
 			this->ClientSize = System::Drawing::Size(1017, 746);
+			this->Controls->Add(this->comboBox1);
 			this->Controls->Add(this->label1);
 			this->Controls->Add(this->textBox1);
 			this->Controls->Add(this->button3);
@@ -151,7 +164,12 @@ namespace LowPassFilter {
 
 	private: System::Void MyForm_Load(System::Object^ sender, System::EventArgs^ e) {
 
+		int numThreads = omp_get_max_threads();
 
+		for (int i = 1; i <= numThreads; i++)
+		{
+			comboBox1->Items->Add(i);
+		}
 	}
 
 	private: System::Void button3_Click(System::Object^ sender, System::EventArgs^ e) {
@@ -228,6 +246,8 @@ private: System::Void textBox1_TextChanged(System::Object^ sender, System::Event
 	
 }
 private: System::Void label1_Click(System::Object^ sender, System::EventArgs^ e) {
+}
+private: System::Void comboBox1_SelectedIndexChanged(System::Object^ sender, System::EventArgs^ e) {
 }
 };
 }
