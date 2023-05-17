@@ -187,6 +187,10 @@ private: System::Void button1_Click(System::Object^ sender, System::EventArgs^ e
 	int start_s, stop_s, TotalTime = 0;
 	int ImageWidth = 4, ImageHeight = 4;
 	int* imageData = inputImage(&ImageWidth, &ImageHeight, editImagePath);
+
+	String^ threads = comboBox1->SelectedItem->ToString();
+	int nthreads = System::Convert::ToInt32(threads);
+
 	// Get the selected item from the TextBox
 	String^ selectedItem = textBox1->Text;
 
@@ -194,7 +198,7 @@ private: System::Void button1_Click(System::Object^ sender, System::EventArgs^ e
 	int kernelSize = System::Convert::ToInt32(selectedItem);
 
 	start_s = clock();
-	applyLowPassFilter_OpenMP(imageData, ImageWidth, ImageHeight, kernelSize);
+	applyLowPassFilter_OpenMP(imageData, ImageWidth, ImageHeight, kernelSize, nthreads);
 	stop_s = clock();
 	TotalTime = (stop_s - start_s) / double(CLOCKS_PER_SEC) * 1000;
 	label1->Text = "Runtime = " + System::Convert::ToString(TotalTime);
@@ -211,12 +215,16 @@ private: System::Void button1_Click(System::Object^ sender, System::EventArgs^ e
 private: System::Void button2_Click(System::Object^ sender, System::EventArgs^ e) {
 	int start_s, stop_s, TotalTime = 0;
 	int ImageWidth = 4, ImageHeight = 4;
+
+	String^ threads = comboBox1->SelectedItem->ToString();
+
 	int* imageData = inputImage(&ImageWidth, &ImageHeight, editImagePath);
 	String^ size = textBox1->Text;
+
 	// Convert the selected item to an integer
 	int kernelSize = System::Convert::ToInt32(size);
-	int world_size;
-	MPI_Comm_size(MPI_COMM_WORLD, &world_size); // Get the number of processes
+	int world_size = System::Convert::ToInt32(threads);
+
 	int rank;
 	MPI_Comm_rank(MPI_COMM_WORLD, &rank); // Get the rank of the current process
 
