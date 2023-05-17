@@ -88,8 +88,9 @@ void createImage(int* image, int width, int height, int index, int mode)
 }
 
 // Function to apply a low pass filter with a variable kernel size using OpenMP
-void applyLowPassFilter_OpenMP(int* input, int width, int height, int kernelSize)
+void applyLowPassFilter_OpenMP(int* input, int width, int height, int kernelSize, int threads)
 {
+    // Calculate kernel dimensions
     int kernelRadius = kernelSize / 2;
 
     // Allocate memory for kernel
@@ -101,8 +102,12 @@ void applyLowPassFilter_OpenMP(int* input, int width, int height, int kernelSize
         kernel[i] = 1;
     }
 
+    // Set the number of threads to be used
+    //int numThreads = omp_get_max_threads();
+    omp_set_num_threads(threads);
+
     // Loop through image pixels and apply filter
-#pragma omp parallel for collapse(2)
+#pragma omp parallel for collapse(2) 
     for (int i = kernelRadius; i < height - kernelRadius; i++)
     {
         for (int j = kernelRadius; j < width - kernelRadius; j++)
@@ -120,7 +125,7 @@ void applyLowPassFilter_OpenMP(int* input, int width, int height, int kernelSize
     }
 
     // Set border pixels to black
-#pragma omp parallel for
+#pragma omp parallel for 
     for (int i = 0; i < height; i++)
     {
         for (int j = 0; j < kernelRadius; j++)
@@ -131,7 +136,7 @@ void applyLowPassFilter_OpenMP(int* input, int width, int height, int kernelSize
         }
     }
 
-#pragma omp parallel for
+#pragma omp parallel for 
     for (int j = kernelRadius; j < width - kernelRadius; j++)
     {
         for (int i = 0; i < kernelRadius; i++)
@@ -147,21 +152,32 @@ void applyLowPassFilter_OpenMP(int* input, int width, int height, int kernelSize
 }
 
 // Function to apply a low pass filter with a variable kernel size using MPI
-void applyLowPassFilter_MPI(int* imageData, int width, int height, int kernelSize, int size, int rank)
+void applyLowPassFilter_MPI(int* imageData, int width, int height, int kernelSize, int size, int rank, int threads)
 {
-    int* localData = new int[width * height / size];
+    // Determine the size of the local chunk of image data to be processed by each process
+    int chunkSize = width * height / threads;
+
+    // Allocate memory for local chunk of image data to be processed by each process
+    int* localData = new int[chunkSize];
+
+    // Calculate kernel radius to be used for filtering
     int kernelRadius = kernelSize / 2;
-    MPI_Scatter(imageData, width * height / size, MPI_INT, localData, width * height / size, MPI_INT, 0, MPI_COMM_WORLD);
 
-    int* filteredData = new int[width * height / size];
+    // Scatter input image data from root process to all processes
+    MPI_Scatter(imageData, chunkSize, MPI_INT, localData, chunkSize, MPI_INT, 0, MPI_COMM_WORLD);
+
+    // Allocate memory for filtered image data
+    int* filteredData = new int[chunkSize];
+
+    // Allocate memory for kernel and initialize with ones
     int* kernel = new int[kernelSize * kernelSize];
-
     for (int i = 0; i < kernelSize * kernelSize; i++)
     {
         kernel[i] = 1;
     }
 
-    for (int i = kernelRadius; i < height / size - kernelRadius; i++)
+    // Apply low pass filter to local chunk of image data
+    for (int i = kernelRadius; i < height / threads - kernelRadius; i++)
     {
         for (int j = kernelRadius; j < width - kernelRadius; j++)
         {
@@ -177,8 +193,10 @@ void applyLowPassFilter_MPI(int* imageData, int width, int height, int kernelSiz
         }
     }
 
-    MPI_Gather(filteredData, width * height / size, MPI_INT, imageData, width * height / size, MPI_INT, 0, MPI_COMM_WORLD);
+    // Gather filtered image data from all processes to root process
+    MPI_Gather(filteredData, chunkSize, MPI_INT, imageData, chunkSize, MPI_INT, 0, MPI_COMM_WORLD);
 
+    // Free memory for local data, filtered data, and kernel
     delete[] localData;
     delete[] filteredData;
     delete[] kernel;
