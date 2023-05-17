@@ -1,3 +1,5 @@
 ﻿  MyForm.cpp
+D:\Engineering Senior\Semester 10\HPC\P2\Low-Pass-Filter\Low Pass Filter\Low Pass Filter\MyForm.h(199,58): warning C4244: '=': conversion from 'double' to 'int', possible loss of data
+D:\Engineering Senior\Semester 10\HPC\P2\Low-Pass-Filter\Low Pass Filter\Low Pass Filter\MyForm.h(233,60): warning C4244: '+=': conversion from 'double' to 'int', possible loss of data
   edits.obj : MSIL module encountered; incremental linking is disabled for MSIL; performing full link
-  Low Pass Filter.vcxproj -> D:\Engineering Senior\Semester 10\HPC\Project\Low Pass Filter\x64\Debug\Low Pass Filter.exe
+  Low Pass Filter.vcxproj -> D:\Engineering Senior\Semester 10\HPC\P2\Low-Pass-Filter\Low Pass Filter\x64\Debug\Low Pass Filter.exe
